@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <title>Processamento de Imagem</title>
+</head>
+<body>
+    <nav style="margin-bottom: 30px;">
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo" style="margin-left: 20px;">Processamento de Imagem</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li style="margin-right: 20px;"><a href="#" onclick="clean();">Limpar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s6 m5">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Upload</span>
+                                <input type="file" id="image-one">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adicione uma imagem...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-image">
+                        <img src="images/no-img.png" id="display-image-one" style="height: 477px;">
+                        <span class="card-title">Imagem 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s1 m2">
+                <div class="card">
+                    <div class="card-content center">
+                        <div class="row">
+                            <a class="waves-effect waves-light btn" onclick="calculator.addition(calculator.img_one, calculator.img_two);">
+                                <i class="material-icons ">add</i>
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.subtraction(calculator.img_one, calculator.img_two);">
+                                <i class="material-icons">remove</i>
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.multiplication(calculator.img_one, calculator.img_two);">
+                                <i class="material-icons">close</i>
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.division(calculator.img_one, calculator.img_two);">
+                                <i class="material-icons">/</i>
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.average(calculator.img_one, calculator.img_two);">
+                                Média
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.blending(calculator.img_one, calculator.img_two, 10);">
+                                blending
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.not(calculator.img_one, calculator.img_two);">
+                                Not
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.or(calculator.img_one, calculator.img_two);">
+                                Or
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.and(calculator.img_one, calculator.img_two);">
+                                And
+                            </a>
+                        </div>
+                        <div class="row">
+                            <a class="waves-effect waves-light btn"
+                                onclick="calculator.xor(calculator.img_one, calculator.img_two);">
+                                Xor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s6 m5">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Upload</span>
+                                <input type="file" id="image-two">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adiciona uma imagem...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-image">
+                        <img src="images/no-img.png" id="display-image-two" style="height: 477px;">
+                        <span class="card-title">Imagem 2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="result-modal" class="modal" style="width: 611px;">
+            <div class="modal-content">
+                <h4 style="text-align: center;">Resultado</h4>
+                <img src="" id="display-image-result" style="max-height: 352px; display: flex; margin: 0 auto;">
+            </div>
+            <div class="modal-footer">
+              <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+            </div>
+          </div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.min.js" integrity="sha512-NxocnqsXP3zm0Xb42zqVMvjQIktKEpTIbCXXyhBPxqGZHqhcOXHs4pXI/GoZ8lE+2NJONRifuBpi9DxC58L0Lw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    let image_one_input = document.getElementById("image-one");
+    let image_two_input = document.getElementById("image-two");
+
+    image_one_input.onchange = event => {
+        const output_img = document.getElementById("display-image-one");
+        let file = image_one_input.files[0];
+
+        if(file){
+            output_img.src =  URL.createObjectURL(file);
+        }
+    }
+
+    image_two_input.onchange = event => {
+        const output_img = document.getElementById("display-image-two");
+        let file = image_two_input.files[0];
+
+        if(file){
+            output_img.src =  URL.createObjectURL(file);
+        }
+    }
+
+    const calculator = {
+        img_one: document.getElementById('display-image-one'),
+        img_two: document.getElementById('display-image-two'),
+        //Somando 50% do pixel de cada imagem
+        addition: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                finalImageData.data[pixelsLenght] = image_one.data[pixelsLenght] * 0.5 
+                    + image_two.data[pixelsLenght] * 0.5;
+            }
+            
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+          
+        },
+        //Subtração de 50% do pixel da segunda imagem
+        subtraction: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+            console.log(pixelsLenght);
+
+            while(pixelsLenght--){
+                let subtractedPixel = image_one.data[pixelsLenght] - image_two.data[pixelsLenght] * 0.5;
+                finalImageData.data[pixelsLenght] = resolveUnderflow(subtractedPixel);
+            }
+            
+            console.log(finalImageData);
+                        
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        //Para uma melhor visualização foi multiplicado 15% de cada pixel.
+        //E truncando o pixel que excede o valor de 255 em 255.
+        multiplication: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght] * 0.15) * (image_two.data[pixelsLenght] * 0.15);
+                finalImageData.data[pixelsLenght] = truncateValues(pixelMultiplied);
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        //ToFix
+        division: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            // while(pixelsLenght--){
+            //     let pixelDivided = Math.ceil((image_one.data[pixelsLenght]) 
+            //         / (image_two.data[pixelsLenght] * 0.25));
+                
+            //     finalImageData.data[pixelsLenght] = truncateValues(Math.abs(pixelDivided));
+            // }
+
+            for(let i = 0; i < pixelsLenght; i+=4){
+                let red = Math.ceil(image_one.data[i] / image_two.data[i]);
+                let green = Math.ceil(image_one.data[i + 1] / image_two.data[i + 1]);
+                let blue = Math.ceil(image_one.data[i + 2] / image_two.data[i + 2]);
+                //let alpha = Math.ceil(image_one.data[i + 3] / image_two.data[i + 3]);
+                let alpha = 180;
+
+                finalImageData.data[i] = red;
+                finalImageData.data[i + 1] = green;
+                finalImageData.data[i + 2] = blue;
+                finalImageData.data[i + 3] = alpha;
+            }
+            
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        average: (img_one, img_two) => {
+            calculator.addition(img_one, img_two);
+        },
+        blending: (img_one, img_two, k) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght] * k) + (image_two.data[pixelsLenght] * (1 - k));
+                finalImageData.data[pixelsLenght] = Math.abs(truncateValues(pixelMultiplied));
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        not: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght]) + (image_two.data[pixelsLenght]);
+                finalImageData.data[pixelsLenght] = 255 - resolveOverflow(pixelMultiplied);
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        or:(img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght]) | (image_two.data[pixelsLenght]);
+                finalImageData.data[pixelsLenght] = pixelMultiplied;
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        and: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght]) & (image_two.data[pixelsLenght]);
+                finalImageData.data[pixelsLenght] = pixelMultiplied;
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        },
+        xor: (img_one, img_two) => {
+            let image_one = getImageData(img_one);
+            let image_two = getImageData(img_two);
+
+            let image_temp = new Image();
+            image_temp.width = image_one.width;
+            image_temp.height = image_one.height;
+
+            let finalImageData = getImageData(image_temp);
+
+            let pixelsLenght = image_one.data.length;
+
+            while(pixelsLenght--){
+                let pixelMultiplied = (image_one.data[pixelsLenght]) ^ (image_two.data[pixelsLenght] * 0.3);
+                finalImageData.data[pixelsLenght] = resolveOverflow(pixelMultiplied);
+            }
+
+            let finalImage = imageDataToImage(finalImageData);
+
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = finalImage.src;
+
+            openResultModal();
+        }
+    };
+
+    function getImageData(image) {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        context.drawImage(image, 0, 0, image.width, image.height);
+
+        const imageDataObj = context.getImageData(0, 0, image.width, image.height);
+        
+        return imageDataObj;
+    }
+
+    function clean() {
+        const no_img_src = "images/no-img.png";
+
+        image_one_input.value = null;
+        image_two_input.value = null;
+
+        let files_path = document.getElementsByClassName("file-path");
+
+        files_path.forEach(element => {
+            element.value = "";
+        });
+
+        let display_img_one = document.getElementById("display-image-one");
+        let display_img_two = document.getElementById("display-image-two");
+
+        display_img_one.src = no_img_src;
+        display_img_two.src = no_img_src;
+    }
+
+    function truncateValues(value) {
+        return value > 255 ? 255 : value;
+    }
+    
+    function resolveOverflowToMinimun(value) {
+        return value > 255 ? 0 : value;
+    }
+
+    function resolveOverflow(value){
+        if(value === Infinity) {
+            return 255;
+        }
+
+        return value > 255 ? value % 255 : value;
+    }
+    function resolveUnderflow(value) {
+        return value < 0 ? 0 : value;
+    }
+
+    function imageDataToImage(imagedata) {
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        canvas.width = imagedata.width;
+        canvas.height = imagedata.height;
+        ctx.putImageData(imagedata, 0, 0);
+
+        let image = new Image();
+        image.src = canvas.toDataURL();
+
+        return image;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, {});
+    });
+
+    function getModalInstance() {
+        let modal = document.getElementById('result-modal');
+        return M.Modal.getInstance(modal);
+    }
+
+    function openResultModal() {
+        getModalInstance().open();
+    }
+
+    function closeResultModal() {
+        getModalInstance().close();
+    }
+</script>
+</html>
