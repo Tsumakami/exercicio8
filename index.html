@@ -10,12 +10,17 @@
 
     <title>Processamento de Imagem</title>
 </head>
+<style>
+    nav {
+        background-color: #26a69a;
+    }
+</style>
 <body>
     <nav style="margin-bottom: 30px;">
         <div class="nav-wrapper">
             <a href="#" class="brand-logo" style="margin-left: 20px;">Processamento de Imagem</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li style="margin-right: 20px;"><a href="#" onclick="clean();">Limpar</a></li>
+                <li style="margin-right: 20px;"><a href="#" onclick="pageController.clean();">Limpar</a></li>
             </ul>
         </div>
     </nav>
@@ -141,6 +146,8 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.min.js" integrity="sha512-NxocnqsXP3zm0Xb42zqVMvjQIktKEpTIbCXXyhBPxqGZHqhcOXHs4pXI/GoZ8lE+2NJONRifuBpi9DxC58L0Lw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="js/imageHelps.js"></script>
+<script src="js/imageCalculator.js"></script>
 <script>
     let image_one_input = document.getElementById("image-one");
     let image_two_input = document.getElementById("image-two");
@@ -166,332 +173,100 @@
     const calculator = {
         img_one: document.getElementById('display-image-one'),
         img_two: document.getElementById('display-image-two'),
-        //Somando 50% do pixel de cada imagem
         addition: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.addition(img_one, img_two)
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                finalImageData.data[pixelsLenght] = image_one.data[pixelsLenght] * 0.5 
-                    + image_two.data[pixelsLenght] * 0.5;
-            }
-            
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
-          
+            pageController.openResultModal(image.src);
         },
         //Subtração de 50% do pixel da segunda imagem
         subtraction: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.subtraction(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-            console.log(pixelsLenght);
-
-            while(pixelsLenght--){
-                let subtractedPixel = image_one.data[pixelsLenght] - image_two.data[pixelsLenght] * 0.5;
-                finalImageData.data[pixelsLenght] = resolveUnderflow(subtractedPixel);
-            }
-            
-            console.log(finalImageData);
-                        
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         //Para uma melhor visualização foi multiplicado 15% de cada pixel.
         //E truncando o pixel que excede o valor de 255 em 255.
         multiplication: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.multiplication(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght] * 0.15) * (image_two.data[pixelsLenght] * 0.15);
-                finalImageData.data[pixelsLenght] = truncateValues(pixelMultiplied);
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         //ToFix
         division: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.division(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            // while(pixelsLenght--){
-            //     let pixelDivided = Math.ceil((image_one.data[pixelsLenght]) 
-            //         / (image_two.data[pixelsLenght] * 0.25));
-                
-            //     finalImageData.data[pixelsLenght] = truncateValues(Math.abs(pixelDivided));
-            // }
-
-            for(let i = 0; i < pixelsLenght; i+=4){
-                let red = Math.ceil(image_one.data[i] / image_two.data[i]);
-                let green = Math.ceil(image_one.data[i + 1] / image_two.data[i + 1]);
-                let blue = Math.ceil(image_one.data[i + 2] / image_two.data[i + 2]);
-                //let alpha = Math.ceil(image_one.data[i + 3] / image_two.data[i + 3]);
-                let alpha = 180;
-
-                finalImageData.data[i] = red;
-                finalImageData.data[i + 1] = green;
-                finalImageData.data[i + 2] = blue;
-                finalImageData.data[i + 3] = alpha;
-            }
-            
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         average: (img_one, img_two) => {
-            calculator.addition(img_one, img_two);
+            let image = ImageCalculator.addition(img_one, img_two);
+
+            pageController.openResultModal(image.src);
         },
         blending: (img_one, img_two, k) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.blending(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght] * k) + (image_two.data[pixelsLenght] * (1 - k));
-                finalImageData.data[pixelsLenght] = Math.abs(truncateValues(pixelMultiplied));
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         not: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.not(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght]) + (image_two.data[pixelsLenght]);
-                finalImageData.data[pixelsLenght] = 255 - resolveOverflow(pixelMultiplied);
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         or:(img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.or(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght]) | (image_two.data[pixelsLenght]);
-                finalImageData.data[pixelsLenght] = pixelMultiplied;
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         and: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.and(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght]) & (image_two.data[pixelsLenght]);
-                finalImageData.data[pixelsLenght] = pixelMultiplied;
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         },
         xor: (img_one, img_two) => {
-            let image_one = getImageData(img_one);
-            let image_two = getImageData(img_two);
+            let image = ImageCalculator.xor(img_one, img_two);
 
-            let image_temp = new Image();
-            image_temp.width = image_one.width;
-            image_temp.height = image_one.height;
-
-            let finalImageData = getImageData(image_temp);
-
-            let pixelsLenght = image_one.data.length;
-
-            while(pixelsLenght--){
-                let pixelMultiplied = (image_one.data[pixelsLenght]) ^ (image_two.data[pixelsLenght] * 0.3);
-                finalImageData.data[pixelsLenght] = resolveOverflow(pixelMultiplied);
-            }
-
-            let finalImage = imageDataToImage(finalImageData);
-
-            let outputResult = document.getElementById("display-image-result");
-            outputResult.src = finalImage.src;
-
-            openResultModal();
+            pageController.openResultModal(image.src);
         }
     };
 
-    function getImageData(image) {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        
-        canvas.width = image.width;
-        canvas.height = image.height;
+    const pageController = {
+        clean: () => {
+            const no_img_src = "images/no-img.png";
 
-        context.drawImage(image, 0, 0, image.width, image.height);
+            image_one_input.value = null;
+            image_two_input.value = null;
 
-        const imageDataObj = context.getImageData(0, 0, image.width, image.height);
-        
-        return imageDataObj;
-    }
+            let files_path = document.getElementsByClassName("file-path");
 
-    function clean() {
-        const no_img_src = "images/no-img.png";
+            files_path.forEach(element => {
+                element.value = "";
+            });
 
-        image_one_input.value = null;
-        image_two_input.value = null;
+            let display_img_one = document.getElementById("display-image-one");
+            let display_img_two = document.getElementById("display-image-two");
 
-        let files_path = document.getElementsByClassName("file-path");
+            display_img_one.src = no_img_src;
+            display_img_two.src = no_img_src;
+        },
+        getModalInstance: () => {
+            let modal = document.getElementById('result-modal');
+            return M.Modal.getInstance(modal);
+        },
+        openResultModal: (src) => {
+            let outputResult = document.getElementById("display-image-result");
+            outputResult.src = src;
 
-        files_path.forEach(element => {
-            element.value = "";
-        });
-
-        let display_img_one = document.getElementById("display-image-one");
-        let display_img_two = document.getElementById("display-image-two");
-
-        display_img_one.src = no_img_src;
-        display_img_two.src = no_img_src;
-    }
-
-    function truncateValues(value) {
-        return value > 255 ? 255 : value;
-    }
-    
-    function resolveOverflowToMinimun(value) {
-        return value > 255 ? 0 : value;
-    }
-
-    function resolveOverflow(value){
-        if(value === Infinity) {
-            return 255;
+            pageController.getModalInstance().open();
+        },
+        closeResultModal: () => {
+            pageController.getModalInstance().close();
         }
-
-        return value > 255 ? value % 255 : value;
-    }
-    function resolveUnderflow(value) {
-        return value < 0 ? 0 : value;
-    }
-
-    function imageDataToImage(imagedata) {
-        let canvas = document.createElement('canvas');
-        let ctx = canvas.getContext('2d');
-        canvas.width = imagedata.width;
-        canvas.height = imagedata.height;
-        ctx.putImageData(imagedata, 0, 0);
-
-        let image = new Image();
-        image.src = canvas.toDataURL();
-
-        return image;
-    }
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         var elems = document.querySelectorAll('.modal');
         var instances = M.Modal.init(elems, {});
     });
-
-    function getModalInstance() {
-        let modal = document.getElementById('result-modal');
-        return M.Modal.getInstance(modal);
-    }
-
-    function openResultModal() {
-        getModalInstance().open();
-    }
-
-    function closeResultModal() {
-        getModalInstance().close();
-    }
+    //TO DO: Adicionar equalização de histograma
 </script>
 </html>
