@@ -18,8 +18,12 @@
 <body>
     <nav style="margin-bottom: 30px;">
         <div class="nav-wrapper">
-            <a href="#" class="brand-logo" style="margin-left: 20px;">Processamento de Imagem</a>
+            <a href="/index.html" class="brand-logo" style="margin-left: 20px;">Processamento de Imagem</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li style="margin-right: 20px;"><a href="/index.html">Operações</a></li>
+                <li style="margin-right: 20px;"><a href="/histogram.html">Histograma</a></li>
+                <li style="margin-right: 20px;"><a href="/mirror.html" >Espelhamento</a></li>
+                <li style="margin-right: 20px;"><a href="/filters.html" >Filtros</a></li>
                 <li style="margin-right: 20px;"><a href="#" onclick="pageController.clean();">Limpar</a></li>
             </ul>
         </div>
@@ -81,7 +85,7 @@
                         </div>
                         <div class="row">
                             <a class="waves-effect waves-light btn"
-                                onclick="calculator.blending(calculator.img_one, calculator.img_two, 10);">
+                                onclick="calculator.blending(calculator.img_one, calculator.img_two, 8);">
                                 blending
                             </a>
                         </div>
@@ -137,6 +141,8 @@
             <div class="modal-content">
                 <h4 style="text-align: center;">Resultado</h4>
                 <img src="" id="display-image-result" style="max-height: 352px; display: flex; margin: 0 auto;">
+                
+                <div class="histogram" id="histogram"></div>
             </div>
             <div class="modal-footer">
               <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
