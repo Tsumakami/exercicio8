@@ -1,10 +1,7 @@
 const mirror = {
     start: async function(image) {
-        console.log(image);
-
         const [imageData] = await Promise.all([getImageData(image)]);
-
-        const mirrorMatrix = Promise.all([this.mirror(image)]);
+        const mirrorMatrix = this.mirror(imageData, image.width);
         //var imageMirror = matrixToImage(mirrorMatrix, image.width, image.height)
 
         const concatResult = this.concatImage(imageData.data, mirrorMatrix, image.width);
@@ -14,9 +11,8 @@ const mirror = {
 
         showResult(result, "display-image-result");
     }, 
-    mirror: function(image) {
-        const imageData = getImageData(image);
-        const width = imageData.width;
+    mirror: function(imageData, width) {
+        //const imageData = getImageData(image);
 
         const lineSeparated = separateMatrixIntoLines(imageData.data, width);
         const flipped = lineSeparated.map(line => this.flipLine(line));
@@ -35,11 +31,11 @@ const mirror = {
     },
     concatImage: function(img1, img2, imgWidth) {
         const [lineSeparated1, lineSeparated2] = [
-          separateMatrixIntoLines(img1, imgWidth), 
-          separateMatrixIntoLines(img2, imgWidth)
+            separateMatrixIntoLines(img1, imgWidth), 
+            separateMatrixIntoLines(img2, imgWidth)
         ];
         const concat = lineSeparated1.map((line, idx) => [...line, ...lineSeparated2[idx]]);
-    
+
         return flatten(concat);
-      }
+    }
 }
