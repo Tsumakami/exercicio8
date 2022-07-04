@@ -81,5 +81,35 @@ const filter = {
         const imageResult = matrixToImage(matrixResult, image.width, image.height);
 
         showResult(imageResult, "display-image-result");
+    },
+    smoothing: function(image) {
+        console.log(image);
+
+        if(image === undefined){
+            console.log('Image is undefined.');
+            return;
+        }
+
+        const dimension = this.getSelectedDimension();
+        const imageData = getImageData(image);
+        const matrixResult = smoothingFilter.apply(imageData.data, image.width, dimension);
+        const imageResult = matrixToImage(matrixResult, image.width, image.height);
+
+        showResult(imageResult, "display-image-result");
+    },
+    gaussian: function(image) {
+        console.log(image);
+
+        if(image === undefined){
+            console.log('Image is undefined.');
+            return;
+        }
+
+        const dimension = this.getSelectedDimension();
+        const imageData = getImageData(image);
+        const matrixResult = gaussianFilter.apply(imageData.data, image.width, dimension);
+        const imageResult = matrixToImage(matrixResult, image.width, image.height);
+
+        showResult(imageResult, "display-image-result");
     }
 }

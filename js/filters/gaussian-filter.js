@@ -1,22 +1,33 @@
-function gaussianFilter(matrix, width, filterSize) {
-  const lineSeparated = separateMatrixIntoLines(matrix, width);
-  const lineAndChunkSeparated = separateChunkIntoPixels(lineSeparated);
-  const kernelSize = kernelMapping[filterSize.toString()];
+const gaussianFilter = {
+  apply: function(matrix, width, filterSize) {
+    const lineSeparated = separateMatrixIntoLines(matrix, width);
+    const lineAndChunkSeparated = separateChunkIntoPixels(lineSeparated);
+    const img2 = JSON.parse(JSON.stringify(lineAndChunkSeparated));
+    const kernelSize = (filterSize - 1) / 2;
+    const bias = 4;
 
-  for (let i = 0; i< lineAndChunkSeparated.length; i++) {
-    for (let j = 0; j < lineAndChunkSeparated[i].length; j++) {
-      const bias = 4;
+    for (let i = kernelSize; i < lineAndChunkSeparated.length - kernelSize; i++) {
+      for (let j = kernelSize; j < lineAndChunkSeparated[i].length - kernelSize; j++) {
+        let totalPixelSum = [0,0,0,0];
+        let div = 0;
 
-      lineAndChunkSeparated[i][j].forEach((pixelVal, idx) => {
-        const newPixelValue = (1 / (2 * Math.PI * (bias * bias))) * Math.exp(-1 * (((i * i) + (j * j)) / (2 * (bias * bias))));
-        lineAndChunkSeparated[i][j][idx] = newPixelValue;
-      });
+        for (let l = i - kernelSize; l <= i + kernelSize; l++) {
+          for (let m = j - kernelSize; m <= j + kernelSize; m++) {
+            const val = (1 / (2 * Math.PI * (bias * bias))) * Math.exp(-1 * ((l * l) * (m * m)) / (2 * bias * bias));
+            totalPixelSum[0] += lineAndChunkSeparated[l][m][0] * val;
+            totalPixelSum[1] += lineAndChunkSeparated[l][m][1] * val;
+            totalPixelSum[2] += lineAndChunkSeparated[l][m][2] * val;
+            div += val;
+          }
+        }
 
-
-      //TODO ajustar Blue
-      lineAndChunkSeparated[i][j][3] = 255;
+        img2[i][j][0] = Math.floor(totalPixelSum[0] / div);
+        img2[i][j][1] = Math.floor(totalPixelSum[1] / div);
+        img2[i][j][2] = Math.floor(totalPixelSum[2] / div);
+        img2[i][j][3] = 255;
+      }
     }
-  }
 
-  return flattenV2(lineAndChunkSeparated);  
+    return flattenV2(img2);
+  }
 }

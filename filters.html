@@ -96,13 +96,13 @@
                         </div>
                         <div class="row">
                             <a class="waves-effect waves-light btn"
-                                onclick="calculator.xor(calculator.img_one, calculator.img_two);">
+                                onclick="filter.smoothing(image);">
                                 Suavização Conservativa
                             </a>
                         </div>
                         <div class="row">
                             <a class="waves-effect waves-light btn"
-                                onclick="calculator.xor(calculator.img_one, calculator.img_two);">
+                                onclick="filter.gaussian(image);">
                                 Gaussiana
                             </a>
                         </div>
@@ -135,6 +135,8 @@
 <script src="js/filters/maximum-filter.js"></script>
 <script src="js/filters/median-filter.js"> </script>
 <script src="js/filters/order-filter.js"></script>
+<script src="js/filters/conservative-smoothing.js"></script>
+<script src="js/filters/gaussian-filter.js"></script>
 <script src="js/filter.js"></script>
 <script>
     let image_one_input = document.getElementById("image-one");
